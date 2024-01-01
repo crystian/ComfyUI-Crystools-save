@@ -1,4 +1,5 @@
 import { app } from '../../../scripts/app.js';
+import { $el } from '../../../scripts/ui.js';
 
 const idProjectNameText = 'Crystools.projectName';
 const idProjectNameShow = 'Crystools.projectNameShow';
@@ -82,24 +83,51 @@ app.registerExtension({
       projectNameInput.value = app.ui.settings.getSettingValue(idProjectNameText, defaultProjectName);
     };
 
-    const newSaveButton = () => {
-      const saveButton = document.getElementById('comfy-save-button')
-      console.log('saveButton', saveButton);
+    const reimplementSaveButton = () => {
+      let saveButton = document.getElementById('comfy-save-button')
+      const saveClickEvents = saveButton.onclick;
 
-      saveButton.addEventListener('click', (event) => {
-        // const name = projectNameInput.value;
-        // saveProjectName(name);
-        console.log('entrou no save');
-        event.preventDefault();
-        // event.stopPropagation();
-        event.stopImmediatePropagation();
-        event.cancelBubble = true;
+      // remove all event listeners
+      const clone = saveButton.cloneNode(true)
+      saveButton.replaceWith(clone);
+
+      // add new event listener
+      clone.addEventListener('click',(event) => {
+        let filename = projectNameInput.value + '.json';
+
+        // literally copied and pasted from comfy ui.js ...
+
+        const promptFilename = app.ui.settings.getSettingValue('Comfy.PromptFilename', true);
+
+        if (promptFilename) {
+          filename = prompt("Save workflow as:", filename);
+          if (!filename) return;
+          if (!filename.toLowerCase().endsWith(".json")) {
+            filename += ".json";
+          }
+        }
+
+        app.graphToPrompt().then(p=> {
+          const json = JSON.stringify(p.workflow, null, 2); // convert the data to a JSON string
+          const blob = new Blob([json], {type: "application/json"});
+          const url = URL.createObjectURL(blob);
+          const a = $el("a", {
+            href: url,
+            download: filename,
+            style: {display: "none"},
+            parent: document.body,
+          });
+          a.click();
+          setTimeout(function () {
+            a.remove();
+            window.URL.revokeObjectURL(url);
+          }, 0);
+        });
+
       });
-
     };
 
-
-    newSaveButton();
+    reimplementSaveButton();
     loadProjectName();
   },
 });
