@@ -24,7 +24,7 @@ You can turn on/off the project name in the menu (see settings).
 
 ## Metadata
 
-If you want to see the metadata, you can use the "Crystools" extension with a node for this.
+If you want to see the metadata, you can use the "[Crystools](https://github.com/crystian/ComfyUI-Crystools)" extension with a node for this.
 
 
 ## Important notes
