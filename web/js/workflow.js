@@ -2,249 +2,119 @@ import { app } from '../../../scripts/app.js';
 import { $el } from '../../../scripts/ui.js';
 
 
-// common variables
-const idExtensionName = 'Crystools.save';
-const idNewSave = 'Crystools.newSave';
-const idProjectNameShow = 'Crystools.projectNameShow';
-const idProjectNameText = 'Crystools.projectNameText';
-const idAuthor = 'Crystools.author';
-const idDescription = 'Crystools.description';
-const idVersion = 'Crystools.version';
+class CrystoolsSave {
+  // common variables
+  idExtensionName = 'Crystools.save';
+  idNewSave = 'Crystools.newSave';
+  idProjectNameShow = 'Crystools.projectNameShow';
+  idProjectNameText = 'Crystools.projectNameText';
+  idAuthor = 'Crystools.author';
+  idDescription = 'Crystools.description';
+  idVersion = 'Crystools.version';
 
-const defaultNewSave = true;
-const defaultProjectNameShow = true;
-const defaultProjectNameText = 'workflow';
-const defaultAuthor = 'Crystools';
-const defaultDescription = 'd';
-const defaultVersion = '1';
+  defaultNewSave = true;
+  defaultProjectNameShow = true;
+  defaultProjectNameText = 'workflow';
+  defaultAuthor = 'Crystools';
+  defaultDescription = '';
+  defaultVersion = '1';
 
-const menuPrefix = '';
-const htmlIdCrystoolsMenu = 'crystools-menu';
+  menuPrefix = '';
+  htmlIdCrystoolsMenu = 'crystools-menu';
 
+  // references of htmls elements
+  inputRefProjectNameText = null;
+  originalSaveEventsRef = null;
+  saveButtonRef = null;
 
-// references of htmls elements
-let inputRefProjectNameText = null;
-let originalSaveEventsRef = null;
-let saveButtonRef = null;
-
-
-const getInfoOnGraph = () => {
-  return app.graphToPrompt();
-};
-
-// just persist the data on workflow reference
-const setInfoOnGraph = (values) => {
-  // create the info object if not exists on workflow
-
-  let name = values?.name || defaultProjectNameText;
-  app.ui.settings.setSettingValue(idProjectNameText, name);
-  values.name = name;
-
-  let author = values?.author || defaultAuthor;
-  app.ui.settings.setSettingValue(idAuthor, author);
-  values.author = author;
-
-  let description = values?.description || defaultDescription;
-  app.ui.settings.setSettingValue(idDescription, description);
-  values.description = description;
-
-  let version = values?.version || defaultVersion;
-  app.ui.settings.setSettingValue(idVersion, version);
-  values.version = version;
-
-  if (!(values?.created)) {
-    values.created = new Date().toISOString();
+  constructor() {
+    this.createSettings();
   }
 
-  inputRefProjectNameText.value = values.name;
-  values.modified = new Date().toISOString();
-  values.software = 'ComfyUI';
-};
+  // not on setup because this affect the order on settings, I prefer to options at first
+  createSettings = () => {
+    /** Form on settings: (the order is important) */
 
-// just the name of project
-const updateProjectName = (value) => {
-  const ctools = document.getElementById(htmlIdCrystoolsMenu);
-  // validation because this run before setup
-  if (ctools && inputRefProjectNameText) {
-    getInfoOnGraph().then((p) => {
-      if (!p.workflow.extra.info) {
-        p.workflow.extra.info = {};
-      }
-      setInfoOnGraph(Object.assign(p.workflow.extra.info, {name: value}));
+    // use new save button
+    app.ui.settings.addSetting({
+      id: this.idNewSave,
+      name: this.menuPrefix + 'Use new save button? (requires page reload)',
+      type: 'boolean',
+      tooltip: 'This will replace the save button function and propose the name of project as filename!',
+      defaultValue: this.defaultNewSave,
+      onChange: this.saveFunctionSwitch,
     });
-  }
-};
 
-// remember to send `{ property: value }`
-const updateInfoOnGraph = (value) => {
-  if (typeof value !== 'object') {
-    console.warn('updateInfoOnGraph: value must be an object');
-    return;
-  }
-
-  if (app.graph) {
-    getInfoOnGraph().then((p) => {
-      setInfoOnGraph(Object.assign(p.workflow.extra.info, value));
+    // show the input on menu
+    app.ui.settings.addSetting({
+      id: this.idProjectNameShow,
+      name: this.menuPrefix + 'Show project name in menu',
+      type: 'boolean',
+      defaultValue: this.defaultProjectNameShow,
+      onChange: this.showProjectName,
     });
-  }
-};
 
-const showProjectName = (value) => {
-  const ctools = document.getElementById(htmlIdCrystoolsMenu);
+    // project name
+    app.ui.settings.addSetting({
+      id: this.idProjectNameText,
+      name: this.menuPrefix + 'Project name',
+      type: 'text',
+      defaultValue: this.defaultProjectNameText,
+      onChange: this.updateProjectName,
+    });
 
-  // validation because this run before setup
-  if (ctools) {
-    ctools.style.display = value ? 'block' : 'none';
-  }
-};
+    // author
+    app.ui.settings.addSetting({
+      id: this.idAuthor,
+      name: this.menuPrefix + 'Author',
+      type: 'text',
+      defaultValue: this.defaultAuthor,
+      onChange: (value) => {
+        this.updateInfoOnGraph({author: value});
+      },
+    });
 
-const saveFunctionOldHandler = (event) => {
-  originalSaveEventsRef && originalSaveEventsRef(event);
-};
+    // description
+    app.ui.settings.addSetting({
+      id: this.idDescription,
+      name: this.menuPrefix + 'Description',
+      type: 'text',
+      defaultValue: this.defaultDescription,
+      onChange: (value) => {
+        this.updateInfoOnGraph({description: value});
+      },
+    });
 
-const saveFunctionNewHandler = async() => {
-  let filename = inputRefProjectNameText.value + '.json';
-  const promptFilename = app.ui.settings.getSettingValue('Comfy.PromptFilename', true);
+    // version
+    app.ui.settings.addSetting({
+      id: this.idVersion,
+      name: this.menuPrefix + 'Version',
+      type: 'text',
+      defaultValue: this.defaultVersion,
+      onChange: (value) => {
+        this.updateInfoOnGraph({version: value});
+      },
+    });
+  };
 
-
-  // literally copied and pasted from comfy ui.js ... https://github.com/comfyanonymous/ComfyUI/blob/master/web/scripts/ui.js#L710C10-L710C10
-
-  // ¯\_(ツ)_/¯
-  if (promptFilename) {
-    filename = prompt('Save workflow as:', filename);
-    if (!filename) {
-      return;
-    }
-    if (!filename.toLowerCase().endsWith('.json')) {
-      filename += '.json';
-    }
-  }
-
-  const p = await app.graphToPrompt();
-  const json = JSON.stringify(p.workflow, null, 2); // convert the data to a JSON string
-  const blob = new Blob([json], {type: 'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = $el('a', {
-    href: url,
-    download: filename,
-    style: {display: 'none'},
-    parent: document.body,
-  });
-  a.click();
-  setTimeout(function() {
-    a.remove();
-    window.URL.revokeObjectURL(url);
-  }, 0);
-};
-
-const saveFunctionSwitch = (newOne) => {
-  // for ignore the first call
-  if (originalSaveEventsRef === null) {
-    return;
-  }
-
-  let handler = null;
-
-  // remove all event listeners
-  const clone = saveButtonRef.cloneNode(true);
-
-  if (newOne) {
-    handler = saveFunctionNewHandler;
-  } else {
-    handler = saveFunctionOldHandler;
-  }
-
-  handler && clone.addEventListener('click', handler, true);
-  saveButtonRef.replaceWith(clone);
-};
-
-/** Form on settings: (the order is important) */
-
-// use new save button
-app.ui.settings.addSetting({
-  id: idNewSave,
-  name: menuPrefix + 'Use new save button? (requires page reload)',
-  type: 'boolean',
-  tooltip: 'This will replace the save button function and propose the name of project as filename!',
-  defaultValue: defaultNewSave,
-  onChange: saveFunctionSwitch,
-});
-
-// show the input on menu
-app.ui.settings.addSetting({
-  id: idProjectNameShow,
-  name: menuPrefix + 'Show project name in menu',
-  type: 'boolean',
-  defaultValue: defaultProjectNameShow,
-  onChange: showProjectName,
-});
-
-
-// project name
-app.ui.settings.addSetting({
-  id: idProjectNameText,
-  name: menuPrefix + 'Project name',
-  type: 'text',
-  defaultValue: defaultProjectNameText,
-  onChange: updateProjectName,
-});
-
-// author
-app.ui.settings.addSetting({
-  id: idAuthor,
-  name: menuPrefix + 'Author',
-  type: 'text',
-  defaultValue: defaultAuthor,
-  onChange: (value) => {
-    updateInfoOnGraph({author: value});
-  },
-});
-
-// description
-app.ui.settings.addSetting({
-  id: idDescription,
-  name: menuPrefix + 'Description',
-  type: 'text',
-  defaultValue: defaultDescription,
-  onChange: (value) => {
-    updateInfoOnGraph({description: value});
-  },
-});
-
-
-// version
-app.ui.settings.addSetting({
-  id: idVersion,
-  name: menuPrefix + 'Version',
-  type: 'text',
-  defaultValue: defaultVersion,
-  onChange: (value) => {
-    updateInfoOnGraph({version: value});
-  },
-});
-
-
-app.registerExtension({
-  name: idExtensionName,
-  async setup() {
-
+  setup() {
     app.graph.onConfigure = (a) => {
       // on drops a file on the canvas
-      getInfoOnGraph().then((p) => {
+      this.getInfoOnGraph().then((p) => {
 
         if (!p.workflow.extra.info) {
           p.workflow.extra.info = {};
         }
 
-        setInfoOnGraph(p.workflow.extra.info);
+        this.setInfoOnGraph(p.workflow.extra.info);
       });
     };
 
     const queueBtn = document.getElementById('queue-button');
 
     const ctools = document.createElement('div');
-    ctools.setAttribute('id', htmlIdCrystoolsMenu);
-    ctools.classList.add(htmlIdCrystoolsMenu);
+    ctools.setAttribute('id', this.htmlIdCrystoolsMenu);
+    ctools.classList.add(this.htmlIdCrystoolsMenu);
     ctools.classList.add('comfy-menu-btns');
     ctools.style.margin = '8px 0';
     ctools.style.width = '100%';
@@ -253,23 +123,161 @@ app.registerExtension({
     const projectNameInput = document.createElement('input');
     projectNameInput.setAttribute('placeholder', 'Project name');
     projectNameInput.style.width = '80%';
-    inputRefProjectNameText = projectNameInput;
     ctools.append(projectNameInput);
-
-    // this boolean does not save the value on workflow
-    showProjectName(app.ui.settings.getSettingValue(idProjectNameShow, defaultProjectNameShow));
-
-    // this text save the value on workflow and localstorage
-    updateProjectName(app.ui.settings.getSettingValue(idProjectNameText, defaultProjectNameText));
+    this.inputRefProjectNameText = projectNameInput;
 
     // events for the input to persist the data on workflow
     projectNameInput.addEventListener('keyup', (event) => {
-      updateProjectName(event.target.value);
+      this.updateProjectName(event.target.value);
     });
 
+    // this boolean does not save the value on workflow
+    this.showProjectName(app.ui.settings.getSettingValue(this.idProjectNameShow, this.defaultProjectNameShow));
+
+    // this text save the value on workflow and localstorage
+    this.updateProjectName(app.ui.settings.getSettingValue(this.idProjectNameText, this.defaultProjectNameText));
+
     // save the original save button event
-    saveButtonRef = document.getElementById('comfy-save-button');
-    originalSaveEventsRef = saveButtonRef.onclick;
-    saveFunctionSwitch(app.ui.settings.getSettingValue(idNewSave, defaultNewSave));
-  },
-});
+    this.saveButtonRef = document.getElementById('comfy-save-button');
+    this.originalSaveEventsRef = this.saveButtonRef.onclick;
+    this.saveFunctionSwitch(app.ui.settings.getSettingValue(this.idNewSave, this.defaultNewSave));
+  }
+
+  showProjectName = (value) => {
+    const ctools = document.getElementById(this.htmlIdCrystoolsMenu);
+
+    // validation because this run before setup
+    if (ctools) {
+      ctools.style.display = value ? 'block' : 'none';
+    }
+  };
+
+  // just persist the data on workflow reference
+  setInfoOnGraph = (values) => {
+    // create the info object if not exists on workflow
+
+    let name = values?.name || this.defaultProjectNameText;
+    app.ui.settings.setSettingValue(this.idProjectNameText, name);
+    values.name = name;
+
+    let author = values?.author || this.defaultAuthor;
+    app.ui.settings.setSettingValue(this.idAuthor, author);
+    values.author = author;
+
+    let description = values?.description || this.defaultDescription;
+    app.ui.settings.setSettingValue(this.idDescription, description);
+    values.description = description;
+
+    let version = values?.version || this.defaultVersion;
+    app.ui.settings.setSettingValue(this.idVersion, version);
+    values.version = version;
+
+    if (!(values?.created)) {
+      values.created = new Date().toISOString();
+    }
+
+    this.inputRefProjectNameText.value = values.name;
+    values.modified = new Date().toISOString();
+    values.software = 'ComfyUI';
+  };
+
+  // remember to send `{ property: value }`
+  updateInfoOnGraph = (value) => {
+    if (typeof value !== 'object') {
+      console.warn('updateInfoOnGraph: value must be an object');
+      return;
+    }
+
+    if (app.graph) {
+      this.getInfoOnGraph().then((p) => {
+        this.setInfoOnGraph(Object.assign(p.workflow.extra.info, value));
+      });
+    }
+  };
+
+  getInfoOnGraph = () => {
+    return app.graphToPrompt();
+  };
+
+  // just the name of project
+  updateProjectName = (value) => {
+    const ctools = document.getElementById(this.htmlIdCrystoolsMenu);
+    // validation because this run before setup
+    if (ctools && this.inputRefProjectNameText) {
+      this.getInfoOnGraph().then((p) => {
+        if (!p.workflow.extra.info) {
+          p.workflow.extra.info = {};
+        }
+        this.setInfoOnGraph(Object.assign(p.workflow.extra.info, {name: value}));
+      });
+    }
+  };
+
+  saveFunctionOldHandler = (event) => {
+    this.updateInfoOnGraph({modified: new Date().toISOString()});
+    this.originalSaveEventsRef && this.originalSaveEventsRef(event);
+  };
+
+  saveFunctionNewHandler = async() => {
+    this.updateInfoOnGraph({modified: new Date().toISOString()});
+    let filename = this.inputRefProjectNameText.value + '.json';
+    const promptFilename = app.ui.settings.getSettingValue('Comfy.PromptFilename', true);
+
+
+    // literally copied and pasted from comfy ui.js ... https://github.com/comfyanonymous/ComfyUI/blob/master/web/scripts/ui.js#L710C10-L710C10
+
+    // ¯\_(ツ)_/¯
+    if (promptFilename) {
+      filename = prompt('Save workflow as:', filename);
+      if (!filename) {
+        return;
+      }
+      if (!filename.toLowerCase().endsWith('.json')) {
+        filename += '.json';
+      }
+    }
+
+    const p = await app.graphToPrompt();
+    const json = JSON.stringify(p.workflow, null, 2); // convert the data to a JSON string
+    const blob = new Blob([json], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = $el('a', {
+      href: url,
+      download: filename,
+      style: {display: 'none'},
+      parent: document.body,
+    });
+    a.click();
+    setTimeout(function() {
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    }, 0);
+  };
+
+  saveFunctionSwitch = (newOne) => {
+    // for ignore the first call
+    if (this.originalSaveEventsRef === null) {
+      return;
+    }
+
+    let handler = null;
+
+    // remove all event listeners
+    const clone = this.saveButtonRef.cloneNode(true);
+
+    if (newOne) {
+      handler = this.saveFunctionNewHandler;
+    } else {
+      handler = this.saveFunctionOldHandler;
+    }
+
+    handler && clone.addEventListener('click', handler);
+    this.saveButtonRef.replaceWith(clone);
+  };
+}
+
+const crystoolsSave = new CrystoolsSave();
+app.registerExtension({
+  name: crystoolsSave.idExtensionName,
+  setup: crystoolsSave.setup.bind(crystoolsSave),
+})
