@@ -30,3 +30,23 @@ If you want to see the metadata, you can use the "[Crystools](https://github.com
 ## Important notes
 
 * I used a specific field in metadata/json: "workflow.extra." I've created an "info" property to store this information. I don't know, and I haven't found any documentation about this, so I hope it's not a problem.
+
+
+## Installation
+
+### Install from GitHub
+1. Install [ComfyUi](https://github.com/comfyanonymous/ComfyUI).
+2. Clone this repo into `custom_modules`:
+    ```
+    cd ComfyUI/custom_nodes
+    git clone https://github.com/crystian/ComfyUI-Crystools-save.git
+    ```
+3. Start up ComfyUI.
+
+### Install from manager
+
+Search for `crystools` in the [manager](https://github.com/ltdrdata/ComfyUI-Manager.git) and install it.
+
+---
+
+Made with ❤️ by Crystian.
