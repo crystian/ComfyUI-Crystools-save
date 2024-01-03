@@ -15,7 +15,7 @@ class CrystoolsSave {
   defaultNewSave = true;
   defaultProjectNameShow = true;
   defaultProjectNameText = 'workflow';
-  defaultAuthor = 'Crystools';
+  defaultAuthor = '';
   defaultDescription = '';
   defaultVersion = '1';
 
