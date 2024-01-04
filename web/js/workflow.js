@@ -20,7 +20,8 @@ class CrystoolsSave {
   defaultVersion = '1';
 
   menuPrefix = '';
-  htmlIdCrystoolsMenu = 'crystools-menu';
+  htmlIdCrystoolsRoot = 'crystools-root';
+  htmlIdCrystoolsInputContainer = 'crystools-project-input-container';
 
   // references of htmls elements
   inputRefProjectNameText = null;
@@ -35,6 +36,15 @@ class CrystoolsSave {
   createSettings = () => {
     /** Form on settings: (the order is important) */
 
+    // show the input on menu
+    app.ui.settings.addSetting({
+      id: this.idProjectNameShow,
+      name: this.menuPrefix + 'Show project name in menu',
+      type: 'boolean',
+      defaultValue: this.defaultProjectNameShow,
+      onChange: this.showProjectName,
+    });
+
     // use new save button
     app.ui.settings.addSetting({
       id: this.idNewSave,
@@ -43,15 +53,6 @@ class CrystoolsSave {
       tooltip: 'This will replace the save button function and propose the name of project as filename!',
       defaultValue: this.defaultNewSave,
       onChange: this.saveFunctionSwitch,
-    });
-
-    // show the input on menu
-    app.ui.settings.addSetting({
-      id: this.idProjectNameShow,
-      name: this.menuPrefix + 'Show project name in menu',
-      type: 'boolean',
-      defaultValue: this.defaultProjectNameShow,
-      onChange: this.showProjectName,
     });
 
     // project name
@@ -110,20 +111,28 @@ class CrystoolsSave {
       });
     };
 
-    const queueBtn = document.getElementById('queue-button');
+    const parentElement = document.getElementById('queue-button');
 
-    const ctools = document.createElement('div');
-    ctools.setAttribute('id', this.htmlIdCrystoolsMenu);
-    ctools.classList.add(this.htmlIdCrystoolsMenu);
-    ctools.classList.add('comfy-menu-btns');
-    ctools.style.margin = '8px 0';
-    ctools.style.width = '100%';
-    queueBtn.insertAdjacentElement('afterend', ctools);
+    let ctoolsRoot = document.getElementById(this.htmlIdCrystoolsRoot);
+    if(!ctoolsRoot){
+      ctoolsRoot = document.createElement('div');
+      ctoolsRoot.setAttribute('id', this.htmlIdCrystoolsRoot);
+      ctoolsRoot.style.display = 'flex';
+      ctoolsRoot.style.flexDirection = 'column';
+      parentElement.insertAdjacentElement('afterend', ctoolsRoot);
+    }
+
+    const projectInputContainer = document.createElement('div');
+    projectInputContainer.setAttribute('id', this.htmlIdCrystoolsInputContainer);
+    projectInputContainer.style.margin = '6px 0';
+    projectInputContainer.style.width = '100%';
+    projectInputContainer.style.order = '5';
+    ctoolsRoot.append(projectInputContainer);
 
     const projectNameInput = document.createElement('input');
     projectNameInput.setAttribute('placeholder', 'Project name');
     projectNameInput.style.width = '80%';
-    ctools.append(projectNameInput);
+    projectInputContainer.append(projectNameInput);
     this.inputRefProjectNameText = projectNameInput;
 
     // events for the input to persist the data on workflow
@@ -144,7 +153,7 @@ class CrystoolsSave {
   }
 
   showProjectName = (value) => {
-    const ctools = document.getElementById(this.htmlIdCrystoolsMenu);
+    const ctools = document.getElementById(this.htmlIdCrystoolsInputContainer);
 
     // validation because this run before setup
     if (ctools) {
@@ -201,7 +210,7 @@ class CrystoolsSave {
 
   // just the name of project
   updateProjectName = (value) => {
-    const ctools = document.getElementById(this.htmlIdCrystoolsMenu);
+    const ctools = document.getElementById(this.htmlIdCrystoolsInputContainer);
     // validation because this run before setup
     if (ctools && this.inputRefProjectNameText) {
       this.getInfoOnGraph().then((p) => {
