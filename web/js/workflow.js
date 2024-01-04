@@ -118,6 +118,7 @@ class CrystoolsSave {
       ctoolsRoot = document.createElement('div');
       ctoolsRoot.setAttribute('id', this.htmlIdCrystoolsRoot);
       ctoolsRoot.style.display = 'flex';
+      ctoolsRoot.style.width = '100%';
       ctoolsRoot.style.flexDirection = 'column';
       parentElement.insertAdjacentElement('afterend', ctoolsRoot);
     }
