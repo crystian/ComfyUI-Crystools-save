@@ -48,7 +48,7 @@ class CrystoolsSave {
     // use new save button
     app.ui.settings.addSetting({
       id: this.idNewSave,
-      name: this.menuPrefix + 'Use new save button? (requires page reload)',
+      name: this.menuPrefix + 'Use new save button (requires page reload)',
       type: 'boolean',
       tooltip: 'This will replace the save button function and propose the name of project as filename!',
       defaultValue: this.defaultNewSave,
