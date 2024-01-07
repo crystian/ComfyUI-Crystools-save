@@ -1,5 +1,6 @@
 import { app } from '../../../scripts/app.js';
 import { $el } from '../../../scripts/ui.js';
+import { commonPrefix } from './common.js';
 
 
 class CrystoolsSave {
@@ -19,7 +20,7 @@ class CrystoolsSave {
   defaultDescription = '';
   defaultVersion = '1';
 
-  menuPrefix = '';
+  menuPrefix = commonPrefix;
   htmlIdCrystoolsRoot = 'crystools-root';
   htmlIdCrystoolsInputContainer = 'crystools-project-input-container';
 
@@ -39,7 +40,7 @@ class CrystoolsSave {
     // show the input on menu
     app.ui.settings.addSetting({
       id: this.idProjectNameShow,
-      name: this.menuPrefix + 'Show project name in menu',
+      name: this.menuPrefix + 'Show project name [menu]',
       type: 'boolean',
       defaultValue: this.defaultProjectNameShow,
       onChange: this.showProjectName,
@@ -48,7 +49,7 @@ class CrystoolsSave {
     // use new save button
     app.ui.settings.addSetting({
       id: this.idNewSave,
-      name: this.menuPrefix + 'Use new save button (requires page reload)',
+      name: this.menuPrefix + 'New save button (requires page reload) [save]',
       type: 'boolean',
       tooltip: 'This will replace the save button function and propose the name of project as filename!',
       defaultValue: this.defaultNewSave,
@@ -58,7 +59,7 @@ class CrystoolsSave {
     // project name
     app.ui.settings.addSetting({
       id: this.idProjectNameText,
-      name: this.menuPrefix + 'Project name',
+      name: this.menuPrefix + 'Project name [save]',
       type: 'text',
       defaultValue: this.defaultProjectNameText,
       onChange: this.updateProjectName,
@@ -67,7 +68,7 @@ class CrystoolsSave {
     // author
     app.ui.settings.addSetting({
       id: this.idAuthor,
-      name: this.menuPrefix + 'Author',
+      name: this.menuPrefix + 'Author [save]',
       type: 'text',
       defaultValue: this.defaultAuthor,
       onChange: (value) => {
@@ -78,7 +79,7 @@ class CrystoolsSave {
     // description
     app.ui.settings.addSetting({
       id: this.idDescription,
-      name: this.menuPrefix + 'Description',
+      name: this.menuPrefix + 'Description [save]',
       type: 'text',
       defaultValue: this.defaultDescription,
       onChange: (value) => {
@@ -89,7 +90,7 @@ class CrystoolsSave {
     // version
     app.ui.settings.addSetting({
       id: this.idVersion,
-      name: this.menuPrefix + 'Version',
+      name: this.menuPrefix + 'Version [save]',
       type: 'text',
       defaultValue: this.defaultVersion,
       onChange: (value) => {
@@ -123,17 +124,17 @@ class CrystoolsSave {
       parentElement.insertAdjacentElement('afterend', ctoolsRoot);
     }
 
-    const projectInputContainer = document.createElement('div');
-    projectInputContainer.setAttribute('id', this.htmlIdCrystoolsInputContainer);
-    projectInputContainer.style.margin = '6px 0';
-    projectInputContainer.style.width = '100%';
-    projectInputContainer.style.order = '5';
-    ctoolsRoot.append(projectInputContainer);
+    const htmlContainer = document.createElement('div');
+    htmlContainer.setAttribute('id', this.htmlIdCrystoolsInputContainer);
+    htmlContainer.style.margin = '6px 0';
+    htmlContainer.style.width = '100%';
+    htmlContainer.style.order = '5';
+    ctoolsRoot.append(htmlContainer);
 
     const projectNameInput = document.createElement('input');
     projectNameInput.setAttribute('placeholder', 'Project name');
     projectNameInput.style.width = '80%';
-    projectInputContainer.append(projectNameInput);
+    htmlContainer.append(projectNameInput);
     this.inputRefProjectNameText = projectNameInput;
 
     // events for the input to persist the data on workflow
@@ -154,11 +155,11 @@ class CrystoolsSave {
   }
 
   showProjectName = (value) => {
-    const ctools = document.getElementById(this.htmlIdCrystoolsInputContainer);
+    const container = document.getElementById(this.htmlIdCrystoolsInputContainer);
 
     // validation because this run before setup
-    if (ctools) {
-      ctools.style.display = value ? 'block' : 'none';
+    if (container) {
+      container.style.display = value ? 'block' : 'none';
     }
   };
 
