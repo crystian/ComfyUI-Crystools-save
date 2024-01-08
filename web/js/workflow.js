@@ -139,7 +139,7 @@ class CrystoolsSave {
 
     // events for the input to persist the data on workflow
     projectNameInput.addEventListener('keyup', (event) => {
-      this.updateProjectName(event.target.value);
+      app.ui.settings.setSettingValue(this.idProjectNameText, event.target.value);
     });
 
     // this boolean does not save the value on workflow
@@ -166,21 +166,20 @@ class CrystoolsSave {
   // just persist the data on workflow reference
   setInfoOnGraph = (values) => {
     // create the info object if not exists on workflow
-
     let name = values?.name || this.defaultProjectNameText;
-    app.ui.settings.setSettingValue(this.idProjectNameText, name);
+    // app.ui.settings.setSettingValue(this.idProjectNameText, name);
     values.name = name;
 
     let author = values?.author || this.defaultAuthor;
-    app.ui.settings.setSettingValue(this.idAuthor, author);
+    // app.ui.settings.setSettingValue(this.idAuthor, author);
     values.author = author;
 
     let description = values?.description || this.defaultDescription;
-    app.ui.settings.setSettingValue(this.idDescription, description);
+    // app.ui.settings.setSettingValue(this.idDescription, description);
     values.description = description;
 
     let version = values?.version || this.defaultVersion;
-    app.ui.settings.setSettingValue(this.idVersion, version);
+    // app.ui.settings.setSettingValue(this.idVersion, version);
     values.version = version;
 
     if (!(values?.created)) {
@@ -219,7 +218,9 @@ class CrystoolsSave {
         if (!p.workflow.extra.info) {
           p.workflow.extra.info = {};
         }
-        this.setInfoOnGraph(Object.assign(p.workflow.extra.info, {name: value}));
+        const finalValue = Object.assign(p.workflow.extra.info, {name: value});
+        // console.log(finalValue);
+        this.setInfoOnGraph(finalValue);
       });
     }
   };
