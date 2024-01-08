@@ -33,6 +33,9 @@ If you want to see the metadata, you can use the "[Crystools](https://github.com
 
 * I used a specific field in metadata/json: "workflow.extra." I've created an "info" property to store this information. I don't know, and I haven't found any documentation about this, so I hope it's not a problem.
 
+## Changelog
+
+Because it is the same project for me, I will use the same changelog on that project [ComfyUI-Crystools](https://github.com/crystian/ComfyUI-Crystools?tab=readme-ov-file#changelog).
 
 ## Installation
 

@@ -1,0 +1,6 @@
+#!/bin/bash
+python .others/version.py
+
+git add __init__.py
+
+exit 0
