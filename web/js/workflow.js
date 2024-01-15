@@ -40,7 +40,7 @@ class CrystoolsSave {
     // show the input on menu
     app.ui.settings.addSetting({
       id: this.idProjectNameShow,
-      name: this.menuPrefix + 'Show project name [menu]',
+      name: this.menuPrefix + '[save] Show project name on menu',
       type: 'boolean',
       defaultValue: this.defaultProjectNameShow,
       onChange: this.showProjectName,
@@ -49,7 +49,7 @@ class CrystoolsSave {
     // use new save button
     app.ui.settings.addSetting({
       id: this.idNewSave,
-      name: this.menuPrefix + 'New save button (requires page reload) [save]',
+      name: this.menuPrefix + '[save] New save button\r\n(requires page reload)',
       type: 'boolean',
       tooltip: 'This will replace the save button function and propose the name of project as filename!',
       defaultValue: this.defaultNewSave,
@@ -59,7 +59,7 @@ class CrystoolsSave {
     // project name
     app.ui.settings.addSetting({
       id: this.idProjectNameText,
-      name: this.menuPrefix + 'Project name [save]',
+      name: this.menuPrefix + '[save] Project name',
       type: 'text',
       defaultValue: this.defaultProjectNameText,
       onChange: this.updateProjectName,
@@ -68,7 +68,7 @@ class CrystoolsSave {
     // author
     app.ui.settings.addSetting({
       id: this.idAuthor,
-      name: this.menuPrefix + 'Author [save]',
+      name: this.menuPrefix + '[save] Author',
       type: 'text',
       defaultValue: this.defaultAuthor,
       onChange: (value) => {
@@ -79,7 +79,7 @@ class CrystoolsSave {
     // description
     app.ui.settings.addSetting({
       id: this.idDescription,
-      name: this.menuPrefix + 'Description [save]',
+      name: this.menuPrefix + '[save] Description',
       type: 'text',
       defaultValue: this.defaultDescription,
       onChange: (value) => {
@@ -90,7 +90,7 @@ class CrystoolsSave {
     // version
     app.ui.settings.addSetting({
       id: this.idVersion,
-      name: this.menuPrefix + 'Version [save]',
+      name: this.menuPrefix + '[save] Version',
       type: 'text',
       defaultValue: this.defaultVersion,
       onChange: (value) => {
