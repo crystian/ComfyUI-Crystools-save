@@ -105,6 +105,8 @@ class CrystoolsSave {
     app.graph.onConfigure = () => {
       // when load a workflow from file pass here!
       // on drops a file on the canvas
+      onConfigure?.apply(this, arguments); // recall the original event
+
       this.getInfoOnGraph().then((p) => {
 
         if (!p.workflow.extra.info) {
@@ -115,7 +117,6 @@ class CrystoolsSave {
 
         app.ui.settings.setSettingValue(this.idProjectNameText, p.workflow.extra.info.name);
         this.setInfoOnGraph(p.workflow.extra.info);
-        onConfigure?.apply(this, arguments); // recall the original event
       });
     };
 
