@@ -107,17 +107,20 @@ class CrystoolsSave {
       // on drops a file on the canvas
       onConfigure?.apply(this, arguments); // recall the original event
 
-      this.getInfoOnGraph().then((p) => {
+      // this is a hack to wait the rerouters nodes created
+      setTimeout(() => {
+        this.getInfoOnGraph().then((p) => {
+          console.log('onConfigure', p);
+          if (!p.workflow.extra.info) {
+            p.workflow.extra.info = {
+              name: this.defaultProjectNameText,
+            };
+          }
 
-        if (!p.workflow.extra.info) {
-          p.workflow.extra.info = {
-            name: this.defaultProjectNameText,
-          };
-        }
-
-        app.ui.settings.setSettingValue(this.idProjectNameText, p.workflow.extra.info.name);
-        this.setInfoOnGraph(p.workflow.extra.info);
-      });
+          app.ui.settings.setSettingValue(this.idProjectNameText, p.workflow.extra.info.name);
+          this.setInfoOnGraph(p.workflow.extra.info);
+        });
+      }, 100);
     };
 
     const parentElement = document.getElementById('queue-button');
