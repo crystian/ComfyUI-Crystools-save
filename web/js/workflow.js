@@ -110,7 +110,6 @@ class CrystoolsSave {
       // this is a hack to wait the rerouters nodes created
       setTimeout(() => {
         this.getInfoOnGraph().then((p) => {
-          console.log('onConfigure', p);
           if (!p.workflow.extra.info) {
             p.workflow.extra.info = {
               name: this.defaultProjectNameText,
