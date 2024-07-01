@@ -1,6 +1,6 @@
 #!/bin/bash
 python .others/version.py
 
-git add __init__.py
+git add __init__.py pyproject.toml version
 
 exit 0
