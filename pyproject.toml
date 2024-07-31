@@ -2,7 +2,7 @@
 name = "comfyui-crystools-save"
 description = "With this quality of life extension, you can save your workflow with a specific name and include additional details such as the author, a description, and the version (in metadata/json). Important: When you share your workflow (via png/json), others will be able to see your information!"
 version = "1.2.4"
-license = "LICENSE"
+license = { file = "LICENSE" }
 
 [project.urls]
 Repository = "https://github.com/crystian/ComfyUI-Crystools-save"
