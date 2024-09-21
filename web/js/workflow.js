@@ -37,49 +37,23 @@ class CrystoolsSave {
   createSettings = () => {
     /** Form on settings: (the order is important) */
 
-    // show the input on menu
+    // version
     app.ui.settings.addSetting({
-      id: this.idProjectNameShow,
-      name: this.menuPrefix + '[save] Show project name on menu',
-      type: 'boolean',
-      defaultValue: this.defaultProjectNameShow,
-      onChange: this.showProjectName,
-    });
-
-    // use new save button
-    app.ui.settings.addSetting({
-      id: this.idNewSave,
-      name: this.menuPrefix + '[save] New save button\r\n(requires page reload)',
-      type: 'boolean',
-      tooltip: 'This will replace the save button function and propose the name of project as filename!',
-      defaultValue: this.defaultNewSave,
-      onChange: this.saveFunctionSwitch,
-    });
-
-    // project name
-    app.ui.settings.addSetting({
-      id: this.idProjectNameText,
-      name: this.menuPrefix + '[save] Project name',
+      id: this.idVersion,
+      name: 'Version',
+      category: ['Crystools', this.menuPrefix + ' Save', 'version' ],
       type: 'text',
-      defaultValue: this.defaultProjectNameText,
-      onChange: this.updateProjectName,
-    });
-
-    // author
-    app.ui.settings.addSetting({
-      id: this.idAuthor,
-      name: this.menuPrefix + '[save] Author',
-      type: 'text',
-      defaultValue: this.defaultAuthor,
+      defaultValue: this.defaultVersion,
       onChange: (value) => {
-        this.updateInfoOnGraph({author: value});
+        this.updateInfoOnGraph({version: value});
       },
     });
 
     // description
     app.ui.settings.addSetting({
       id: this.idDescription,
-      name: this.menuPrefix + '[save] Description',
+      name: 'Description',
+      category: ['Crystools', this.menuPrefix + ' Save', 'desc' ],
       type: 'text',
       defaultValue: this.defaultDescription,
       onChange: (value) => {
@@ -87,15 +61,47 @@ class CrystoolsSave {
       },
     });
 
-    // version
+    // author
     app.ui.settings.addSetting({
-      id: this.idVersion,
-      name: this.menuPrefix + '[save] Version',
+      id: this.idAuthor,
+      name: 'Author',
+      category: ['Crystools', this.menuPrefix + ' Save', 'author' ],
       type: 'text',
-      defaultValue: this.defaultVersion,
+      defaultValue: this.defaultAuthor,
       onChange: (value) => {
-        this.updateInfoOnGraph({version: value});
+        this.updateInfoOnGraph({author: value});
       },
+    });
+
+    // project name
+    app.ui.settings.addSetting({
+      id: this.idProjectNameText,
+      name: 'Project name',
+      category: ['Crystools', this.menuPrefix + ' Save', 'name' ],
+      type: 'text',
+      defaultValue: this.defaultProjectNameText,
+      onChange: this.updateProjectName,
+    });
+
+    // use new save button
+    app.ui.settings.addSetting({
+      id: this.idNewSave,
+      name: 'New save button',
+      category: ['Crystools', this.menuPrefix + ' Save', 'new button' ],
+      type: 'boolean',
+      tooltip: 'This will replace the save button function and propose the name of project as filename! (requires page reload)',
+      defaultValue: this.defaultNewSave,
+      onChange: this.saveFunctionSwitch,
+    });
+
+    // show the input on menu
+    app.ui.settings.addSetting({
+      id: this.idProjectNameShow,
+      name: 'Show project name on menu',
+      category: ['Crystools', this.menuPrefix + ' Save', 'menu' ],
+      type: 'boolean',
+      defaultValue: this.defaultProjectNameShow,
+      onChange: this.showProjectName,
     });
   };
 
