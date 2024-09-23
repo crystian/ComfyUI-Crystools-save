@@ -1,0 +1,32 @@
+.comfy-menu #crystools-root {
+	/*background-color: red;*/
+	display: flex;
+	width: 100%;
+	flex-direction: column;
+
+	#crystools-project-input-container{
+		margin: 6px;
+		width: 100%;
+		order: 5;
+
+		input{
+			width: 80%;
+		}
+	}
+}
+
+.comfyui-menu #crystools-root {
+	/*background-color: red;*/
+	display: flex;
+	min-width: 300px;
+
+	#crystools-project-input-container{
+		margin: 6px;
+		/*width: 100%;*/
+		order: 5;
+
+		input{
+			width: 80px;
+		}
+	}
+}

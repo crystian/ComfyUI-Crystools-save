@@ -1,7 +1,10 @@
-import { app } from '../../../scripts/app.js';
-import { $el } from '../../../scripts/ui.js';
-import { commonPrefix } from './common.js';
+import { app } from '../../scripts/app.js';
+import { $el } from '../../scripts/ui.js';
+import { commonPrefix, injectCss } from './common.js';
 
+injectCss('extensions/ComfyUI-Crystools-save/save.css').then(() => {
+  // console.log('injectCss');
+});
 
 class CrystoolsSave {
   // common variables
@@ -134,22 +137,15 @@ class CrystoolsSave {
     if(!ctoolsRoot){
       ctoolsRoot = document.createElement('div');
       ctoolsRoot.setAttribute('id', this.htmlIdCrystoolsRoot);
-      ctoolsRoot.style.display = 'flex';
-      ctoolsRoot.style.width = '100%';
-      ctoolsRoot.style.flexDirection = 'column';
       parentElement.insertAdjacentElement('afterend', ctoolsRoot);
     }
 
     const htmlContainer = document.createElement('div');
     htmlContainer.setAttribute('id', this.htmlIdCrystoolsInputContainer);
-    htmlContainer.style.margin = '6px 0';
-    htmlContainer.style.width = '100%';
-    htmlContainer.style.order = '5';
     ctoolsRoot.append(htmlContainer);
 
     const projectNameInput = document.createElement('input');
     projectNameInput.setAttribute('placeholder', 'Project name');
-    projectNameInput.style.width = '80%';
     htmlContainer.append(projectNameInput);
     this.inputRefProjectNameText = projectNameInput;
 
