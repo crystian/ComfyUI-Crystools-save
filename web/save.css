@@ -17,8 +17,8 @@
 
 .comfyui-menu #crystools-root {
 	/*background-color: red;*/
-	display: flex;
-	min-width: 300px;
+	/*display: flex;*/
+	/*min-width: 300px;*/
 
 	#crystools-project-input-container{
 		margin: 6px;
