@@ -115,9 +115,6 @@ class CrystoolsSave {
     app.graph.onConfigure = () => {
       // when load a workflow from file pass here!
       // on drops a file on the canvas
-    console.log("***********1")
-    console.log(onConfigure)
-    console.log(arguments)
       onConfigure?.bind(this); // recall the original event
 
       // this is a hack to wait the rerouters nodes created
