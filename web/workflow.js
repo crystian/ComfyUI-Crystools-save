@@ -44,7 +44,7 @@ class CrystoolsSave {
     app.ui.settings.addSetting({
       id: this.idVersion,
       name: 'Version',
-      category: ['Crystools', this.menuPrefix + ' Save', 'version' ],
+      category: ['Crystools', this.menuPrefix + ' [Deprecated] Save', 'version' ],
       type: 'text',
       defaultValue: this.defaultVersion,
       onChange: (value) => {
@@ -56,7 +56,7 @@ class CrystoolsSave {
     app.ui.settings.addSetting({
       id: this.idDescription,
       name: 'Description',
-      category: ['Crystools', this.menuPrefix + ' Save', 'desc' ],
+      category: ['Crystools', this.menuPrefix + ' [Deprecated] Save', 'desc' ],
       type: 'text',
       defaultValue: this.defaultDescription,
       onChange: (value) => {
@@ -68,7 +68,7 @@ class CrystoolsSave {
     app.ui.settings.addSetting({
       id: this.idAuthor,
       name: 'Author',
-      category: ['Crystools', this.menuPrefix + ' Save', 'author' ],
+      category: ['Crystools', this.menuPrefix + ' [Deprecated] Save', 'author' ],
       type: 'text',
       defaultValue: this.defaultAuthor,
       onChange: (value) => {
@@ -80,7 +80,7 @@ class CrystoolsSave {
     app.ui.settings.addSetting({
       id: this.idProjectNameText,
       name: 'Project name',
-      category: ['Crystools', this.menuPrefix + ' Save', 'name' ],
+      category: ['Crystools', this.menuPrefix + ' [Deprecated] Save', 'name' ],
       type: 'text',
       defaultValue: this.defaultProjectNameText,
       onChange: this.updateProjectName,
@@ -90,7 +90,7 @@ class CrystoolsSave {
     app.ui.settings.addSetting({
       id: this.idNewSave,
       name: 'New save button',
-      category: ['Crystools', this.menuPrefix + ' Save', 'new button' ],
+      category: ['Crystools', this.menuPrefix + ' [Deprecated] Save', 'new button' ],
       type: 'boolean',
       tooltip: 'This will replace the save button function and propose the name of project as filename! (requires page reload)',
       defaultValue: this.defaultNewSave,
@@ -101,7 +101,7 @@ class CrystoolsSave {
     app.ui.settings.addSetting({
       id: this.idProjectNameShow,
       name: 'Show project name on menu',
-      category: ['Crystools', this.menuPrefix + ' Save', 'menu' ],
+      category: ['Crystools', this.menuPrefix + ' [Deprecated] Save', 'menu' ],
       type: 'boolean',
       defaultValue: this.defaultProjectNameShow,
       onChange: this.showProjectName,
@@ -111,10 +111,14 @@ class CrystoolsSave {
   setup() {
     // save the original onConfigure event
     const onConfigure = app.graph.onConfigure;
+
     app.graph.onConfigure = () => {
       // when load a workflow from file pass here!
       // on drops a file on the canvas
-      onConfigure?.apply(this, arguments); // recall the original event
+    console.log("***********1")
+    console.log(onConfigure)
+    console.log(arguments)
+      onConfigure?.bind(this); // recall the original event
 
       // this is a hack to wait the rerouters nodes created
       setTimeout(() => {
